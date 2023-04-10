@@ -5,6 +5,7 @@ import 'package:admin_web_panel/home_screen.dart';
 import 'package:admin_web_panel/orders_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:simple_sidebar/simple_sidebar.dart';
 import 'package:simple_sidebar/simple_sidebar_item.dart';
 import 'package:simple_sidebar/simple_sidebar_theme.dart';
@@ -60,12 +61,12 @@ class MyHomePage extends StatefulWidget {
     ),
     SimpleSidebarItem(
       title: "Add",
-      iconFront: Icons.add,
+      iconFront: FontAwesomeIcons.add,
       child: AddScreen(),
     ),
     SimpleSidebarItem(
       title: "Orders",
-      iconFront: Icons.shopping_cart_outlined,
+      iconFront: FontAwesomeIcons.cartShopping,
       child: OrdersScreen(),
     ),
   ];

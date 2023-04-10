@@ -42,6 +42,7 @@ dev_dependencies:
   cloud_firestore: ^3.2.1
   firebase_core_platform_interface: 4.5.1
   simple_sidebar: ^0.0.7
+  font_awesome_flutter: ^10.4.0
   flutter_test:
     sdk: flutter
 

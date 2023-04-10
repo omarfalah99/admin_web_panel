@@ -1,3 +1,4 @@
+import 'package:admin_web_panel/description_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
@@ -42,7 +43,20 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                             backgroundColor: const Color(0xFFF5F6F9),
                           ),
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.of(context)
+                                .push(MaterialPageRoute(builder: (context) {
+                              return DescriptionScreen(
+                                image: products['imageUrl'],
+                                tag: 'wow' + index.toString(),
+                                des: products['des'],
+                                name: products['name'],
+                                price: products['price'],
+                                id: products['id'],
+                                category: products['category'],
+                              );
+                            }));
+                          },
                           child: Column(
                             children: [
                               Image.network(

@@ -14,6 +14,9 @@ class _AddScreenState extends State<AddScreen> {
   final imageUrl = TextEditingController();
   final price = TextEditingController();
   final quantity = TextEditingController();
+  final category = TextEditingController();
+
+  Key id = UniqueKey();
 
   @override
   Widget build(BuildContext context) {
@@ -24,14 +27,14 @@ class _AddScreenState extends State<AddScreen> {
             padding: const EdgeInsets.all(8.0),
             child: TextField(
               controller: name,
-              decoration: InputDecoration(hintText: 'Name'),
+              decoration: const InputDecoration(hintText: 'Name'),
             ),
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextField(
               controller: des,
-              decoration: InputDecoration(hintText: 'Description'),
+              decoration: const InputDecoration(hintText: 'Description'),
             ),
           ),
           Padding(
@@ -54,7 +57,15 @@ class _AddScreenState extends State<AddScreen> {
             child: TextField(
               controller: quantity,
               keyboardType: TextInputType.number,
-              decoration: InputDecoration(hintText: 'Quantity'),
+              decoration: const InputDecoration(hintText: 'Quantity'),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              controller: category,
+              keyboardType: TextInputType.name,
+              decoration: const InputDecoration(hintText: 'Category'),
             ),
           ),
           ElevatedButton.icon(
@@ -65,14 +76,19 @@ class _AddScreenState extends State<AddScreen> {
                   borderRadius: BorderRadius.circular(30),
                 ),
               ),
-              icon: Icon(Icons.add),
+              icon: const Icon(Icons.add),
               onPressed: () async {
-                await FirebaseFirestore.instance.collection('products').add({
+                await FirebaseFirestore.instance
+                    .collection('products')
+                    .doc(id.toString())
+                    .set({
                   'name': name.text,
                   'des': des.text,
                   'imageUrl': imageUrl.text,
-                  'price': price.text as double,
+                  'price': price.text,
                   'quantity': quantity.text,
+                  'category': category.text,
+                  'id': id.toString(),
                 });
               },
               label: Text('Add Products'))
