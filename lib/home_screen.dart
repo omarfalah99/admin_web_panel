@@ -21,9 +21,9 @@ class _HomeScreenState extends State<HomeScreen> {
               Expanded(
                 child: GridView.builder(
                   itemCount: snapshot.data?.docs.length,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 4,
-                    mainAxisExtent: 300,
+                    mainAxisExtent: MediaQuery.of(context).size.width * 0.3,
                   ),
                   itemBuilder: (context, index) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
@@ -63,7 +63,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                 products!['imageUrl'],
                                 fit: BoxFit.cover,
                               ),
-                              Text(products['name']),
+                              MediaQuery.of(context).size.width < 600
+                                  ? Container()
+                                  : Text(products['name']),
                             ],
                           ),
                         ),
