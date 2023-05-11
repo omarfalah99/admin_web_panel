@@ -10,165 +10,78 @@ class OrdersScreen extends StatefulWidget {
 }
 
 class _OrdersScreenState extends State<OrdersScreen> {
+  List<Map<String, dynamic>> myDataList = [];
+
   @override
   Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
     return Scaffold(
-        body: StreamBuilder(
-      builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-        return ListView.builder(
-          itemBuilder: (context, index) {
-            final order = snapshot.data?.docs[index];
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(
-                child: CircularProgressIndicator(
-                  color: Colors.deepOrange,
-                ),
+        body: Column(
+      children: [
+        Container(
+          width: width * 0.7,
+          height: height * 0.4,
+          child: StreamBuilder<QuerySnapshot>(
+            stream:
+                FirebaseFirestore.instance.collection('admin_cart').snapshots(),
+            builder:
+                (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+              if (snapshot.hasError) {
+                return const Text('Something went wrong');
+              }
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Text("Loading...");
+              }
+              myDataList.clear();
+              snapshot.data!.docs.forEach((DocumentSnapshot document) {
+                Map<String, dynamic> data =
+                    document.data() as Map<String, dynamic>;
+                myDataList.add(data);
+              });
+              return Container(
+                // color: Colors.red,
+                width: 500,
+                height: 500,
+                child: DataTable(
+                    border: TableBorder.all(
+                        color: Colors.white10,
+                        borderRadius: BorderRadius.circular(10),
+                        style: BorderStyle.solid),
+                    columns: const [
+                      DataColumn(label: Text('Order ID')),
+                      DataColumn(label: Text('Order Date')),
+                      DataColumn(label: Text('User Name')),
+                      DataColumn(label: Text('City')),
+                    ],
+                    rows: myDataList.map((e) {
+                      return DataRow(
+                          cells: [
+                            DataCell(Text("#${e['orderNo']}")),
+                            DataCell(
+                                Text(e['date'].toString().substring(0, 10))),
+                            DataCell(Text(e['nameOfUser'].toString())),
+                            DataCell(Text(e['city'].toString())),
+                          ],
+                          onSelectChanged: (val) {
+                            Navigator.of(context)
+                                .push(MaterialPageRoute(builder: (context) {
+                              return OrderDetails(
+                                  street: e['street'],
+                                  orders: e['items'],
+                                  city: e['city'],
+                                  email: e['email'],
+                                  garak: e['garak'],
+                                  name: e['nameOfUser'],
+                                  phone: e['phone']);
+                            }));
+                          });
+                    }).toList()),
               );
-            } else {
-              return ListTile(
-                title: Text(order['nameOfUser']),
-                onTap: () {
-                  Navigator.of(context)
-                      .push(MaterialPageRoute(builder: (context) {
-                    return OrderDetails(
-                      orders: order['items'],
-                    );
-                  }));
-                },
-              );
-            }
-          },
-          itemCount: snapshot.data?.docs.length,
-        );
-      },
-      stream: FirebaseFirestore.instance.collection('admin_cart').snapshots(),
+            },
+          ),
+        ),
+      ],
     ));
   }
 }
-
-// Container(
-// width: double.infinity,
-// height: 70,
-// margin: EdgeInsets.all(10),
-// decoration: BoxDecoration(
-// borderRadius: BorderRadius.circular(15)),
-// child: InkWell(
-// onTap: () {},
-// borderRadius: BorderRadius.circular(15),
-// child: Card(
-// margin: EdgeInsets.all(10),
-// shape: RoundedRectangleBorder(
-// borderRadius: BorderRadius.circular(15)),
-// color: Color.fromRGBO(246, 121, 82, 1),
-// child: Row(
-// // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-// children: [
-// SizedBox(
-// width:
-// MediaQuery.of(context).size.width * 0.1,
-// ),
-// Text(
-// data['nameOfUser'],
-// style: const TextStyle(color: Colors.white),
-// ),
-// SizedBox(
-// width: MediaQuery.of(context).size.width *
-// 0.08,
-// ),
-// Text(
-// data['phone'],
-// style: TextStyle(color: Colors.white),
-// ),
-// SizedBox(
-// width: MediaQuery.of(context).size.width *
-// 0.06,
-// ),
-// Text(
-// data['price'] + ' \$',
-// style: TextStyle(color: Colors.white),
-// ),
-// SizedBox(
-// width:
-// MediaQuery.of(context).size.width * 0.1,
-// ),
-// Text(
-// data['quantity'].toString(),
-// style: const TextStyle(color: Colors.white),
-// ),
-// SizedBox(
-// width: MediaQuery.of(context).size.width *
-// 0.13,
-// ),
-// Text(
-// data['subtotal'].toString() + ' \$',
-// style: TextStyle(color: Colors.white),
-// ),
-// SizedBox(
-// width:
-// MediaQuery.of(context).size.width * 0.1,
-// ),
-// Text(
-// data['date'].toString().substring(0, 10),
-// style: TextStyle(color: Colors.white),
-// ),
-// ],
-// ),
-// ),
-// ))
-
-// SizedBox(
-// width: double.infinity,
-// height: 70,
-// child: Card(
-// margin: EdgeInsets.all(10),
-// shape: RoundedRectangleBorder(
-// borderRadius: BorderRadius.circular(15)),
-// color: Colors.purple,
-// child: Row(
-// // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-// children: [
-// SizedBox(
-// width: MediaQuery.of(context).size.width * 0.1,
-// ),
-// const Text(
-// 'Name',
-// style: TextStyle(color: Colors.white),
-// ),
-// SizedBox(
-// width: MediaQuery.of(context).size.width * 0.1,
-// ),
-// const Text(
-// 'Phone',
-// style: TextStyle(color: Colors.white),
-// ),
-// SizedBox(
-// width: MediaQuery.of(context).size.width * 0.1,
-// ),
-// const Text(
-// 'Price',
-// style: TextStyle(color: Colors.white),
-// ),
-// SizedBox(
-// width: MediaQuery.of(context).size.width * 0.1,
-// ),
-// const Text(
-// 'Quantity',
-// style: TextStyle(color: Colors.white),
-// ),
-// SizedBox(
-// width: MediaQuery.of(context).size.width * 0.1,
-// ),
-// const Text(
-// 'Subtotal',
-// style: TextStyle(color: Colors.white),
-// ),
-// SizedBox(
-// width: MediaQuery.of(context).size.width * 0.1,
-// ),
-// const Text(
-// 'Date',
-// style: TextStyle(color: Colors.white),
-// ),
-// ],
-// ),
-// )),

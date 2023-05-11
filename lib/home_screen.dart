@@ -22,8 +22,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: GridView.builder(
                   itemCount: snapshot.data?.docs.length,
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 4,
-                    mainAxisExtent: MediaQuery.of(context).size.width * 0.3,
+                    crossAxisCount:
+                        MediaQuery.of(context).size.width > 1000 ? 6 : 4,
+                    mainAxisExtent: MediaQuery.of(context).size.width * 0.32,
                   ),
                   itemBuilder: (context, index) {
                     if (snapshot.connectionState == ConnectionState.waiting) {

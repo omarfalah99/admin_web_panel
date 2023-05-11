@@ -11,6 +11,8 @@ class AddScreen extends StatefulWidget {
 class _AddScreenState extends State<AddScreen> {
   final name = TextEditingController();
   final des = TextEditingController();
+  final kg = TextEditingController();
+  final barcode = TextEditingController();
   final imageUrl = TextEditingController();
   final price = TextEditingController();
   final quantity = TextEditingController();
@@ -33,6 +35,14 @@ class _AddScreenState extends State<AddScreen> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextField(
+              controller: kg,
+              keyboardType: TextInputType.name,
+              decoration: const InputDecoration(hintText: 'Kg'),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
               controller: des,
               decoration: const InputDecoration(hintText: 'Description'),
             ),
@@ -41,7 +51,7 @@ class _AddScreenState extends State<AddScreen> {
             padding: const EdgeInsets.all(8.0),
             child: TextField(
               controller: imageUrl,
-              decoration: InputDecoration(hintText: 'Image'),
+              decoration: const InputDecoration(hintText: 'Image'),
             ),
           ),
           Padding(
@@ -49,7 +59,7 @@ class _AddScreenState extends State<AddScreen> {
             child: TextField(
               controller: price,
               keyboardType: TextInputType.number,
-              decoration: InputDecoration(hintText: 'Price'),
+              decoration: const InputDecoration(hintText: 'Price'),
             ),
           ),
           Padding(
@@ -68,9 +78,17 @@ class _AddScreenState extends State<AddScreen> {
               decoration: const InputDecoration(hintText: 'Category'),
             ),
           ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              controller: barcode,
+              keyboardType: TextInputType.name,
+              decoration: const InputDecoration(hintText: 'Barcode'),
+            ),
+          ),
           ElevatedButton.icon(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Color.fromRGBO(246, 121, 82, 1),
+                backgroundColor: const Color.fromRGBO(246, 121, 82, 1),
                 minimumSize: Size(MediaQuery.of(context).size.width - 200, 70),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30),
@@ -87,11 +105,13 @@ class _AddScreenState extends State<AddScreen> {
                   'imageUrl': imageUrl.text,
                   'price': price.text,
                   'quantity': quantity.text,
+                  'barcode': barcode.text,
+                  'kg': kg.text,
                   'category': category.text,
                   'id': id.toString(),
                 });
               },
-              label: Text('Add Products'))
+              label: const Text('Add Products'))
         ],
       ),
     );

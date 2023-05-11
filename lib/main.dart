@@ -3,9 +3,12 @@ import 'dart:developer';
 import 'package:admin_web_panel/add_screen.dart';
 import 'package:admin_web_panel/home_screen.dart';
 import 'package:admin_web_panel/orders_screen.dart';
+import 'package:admin_web_panel/provider.dart';
+import 'package:admin_web_panel/report_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:simple_sidebar/simple_sidebar.dart';
 import 'package:simple_sidebar/simple_sidebar_item.dart';
 import 'package:simple_sidebar/simple_sidebar_theme.dart';
@@ -18,7 +21,10 @@ Future main() async {
           appId: '1:648832836667:web:e688f6dfef313be865681e',
           messagingSenderId: '648832836667',
           projectId: 'e-commerce-college'));
-  runApp(const MyApp());
+  runApp(ChangeNotifierProvider(
+    create: (context) => FirebaseProvider(),
+    child: MyApp(),
+  ));
 }
 
 class MyApp extends StatelessWidget {
@@ -68,6 +74,11 @@ class MyHomePage extends StatefulWidget {
       title: "Orders",
       iconFront: FontAwesomeIcons.cartShopping,
       child: OrdersScreen(),
+    ),
+    SimpleSidebarItem(
+      title: "Report",
+      iconFront: Icons.report,
+      child: ReportScreen(),
     ),
   ];
   final String title;
