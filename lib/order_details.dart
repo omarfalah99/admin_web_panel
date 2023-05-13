@@ -9,15 +9,19 @@ class OrderDetails extends StatefulWidget {
   String city;
   String garak;
   String street;
+  String date;
+  String status;
   OrderDetails({
     Key? key,
     required this.street,
+    required this.status,
     required this.orders,
     required this.city,
     required this.email,
     required this.garak,
     required this.name,
     required this.phone,
+    required this.date,
   }) : super(key: key);
 
   @override
@@ -188,54 +192,141 @@ class _OrderDetailsState extends State<OrderDetails> {
             SizedBox(
               height: screenHeight * 0.2,
             ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+            (widget.status == 'Confirm')
+                ? Container(
+                    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                    decoration: BoxDecoration(
+                      color: Colors.green[100],
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    margin: const EdgeInsets.all(30),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: const [
+                        Icon(Icons.check_circle, color: Colors.green, size: 30),
+                        SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            'Order placed successfully!',
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                        SizedBox(width: 10),
+                      ],
+                    ),
+                  )
+                : ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        backgroundColor: const Color.fromRGBO(246, 121, 82, 1),
+                        minimumSize:
+                            Size(screenWidth * 0.4, screenHeight * 0.05)),
+                    onPressed: () async {
+                      List list = [];
+                      widget.orders.forEach((element) {
+                        list.add({
+                          'name': element['name'],
+                          'quantity': element['quantity']
+                        });
+                      });
+
+                      widget.orders.forEach((element) {
+                        final FirebaseFirestore firestore =
+                            FirebaseFirestore.instance;
+
+                        final DateTime now = DateTime.now();
+                        final String date =
+                            '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+
+                        final DocumentReference documentRef =
+                            firestore.collection('DailyData').doc(date);
+                        documentRef.get().then((documentSnapshot) {
+                          if (documentSnapshot.exists) {
+                            documentRef.update({
+                              element['name']:
+                                  FieldValue.increment(element['quantity'])
+                            }).then((value) {
+                              print('Document updated successfully.');
+                            }).catchError((error) {
+                              print('Failed to update document: $error');
+                            });
+                          } else {
+                            FirebaseFirestore.instance
+                                .collection('DailyData')
+                                .doc(date)
+                                .set({
+                              'date': date,
+                              element['name']:
+                                  FieldValue.increment(element['quantity']),
+                            });
+                          }
+                          print('Item added successfully');
+                        }).catchError((error) {
+                          print('Failed to get document: $error');
+                        });
+                      });
+
+                      await FirebaseFirestore.instance
+                          .collection('confirmedOrders')
+                          .add({
+                        'city': widget.city,
+                        'nameOfUser': widget.name,
+                        'phone': widget.phone,
+                        'street': widget.street,
+                        'garak': widget.garak,
+                        'email': widget.email,
+                        'date': widget.date,
+                        'items': FieldValue.arrayUnion(widget.orders),
+                      });
+                      await FirebaseFirestore.instance
+                          .collection('admin_cart')
+                          .doc(widget.email)
+                          .delete();
+
+                      widget.orders.forEach((element) async {
+                        await FirebaseFirestore.instance
+                            .collection('myOrders')
+                            .add({
+                          'email': widget.email,
+                          'name': element['name'],
+                          'quantity': element['quantity'],
+                          'date': widget.date,
+                          'imageUrl': element['imageUrl'],
+                        });
+                      });
+
+
+                      await showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: Icon(Icons.check_circle,
+                              color: Colors.green, size: 80),
+                          content: Text(
+                              'Order has been placed and ready to go!',
+                              style: TextStyle(
+                                  fontSize: 24, fontWeight: FontWeight.bold)),
+                          actions: <Widget>[
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor:
+                                    Color.fromRGBO(246, 121, 82, 1),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                              child: Text('OK'),
+                              onPressed: () => Navigator.of(context).pop(),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                    child: Text('Confirm Order'),
                   ),
-                  backgroundColor: const Color.fromRGBO(246, 121, 82, 1),
-                  minimumSize: Size(screenWidth * 0.4, screenHeight * 0.05)),
-              onPressed: () {
-                List list = [];
-                widget.orders.forEach((element) {
-                  list.add({
-                    'name': element['name'],
-                    'quantity': element['quantity']
-                  });
-                });
-                for (var element in widget.orders) {
-                  final FirebaseFirestore firestore =
-                      FirebaseFirestore.instance;
-                  final DocumentReference documentReference =
-                      firestore.collection('report').doc(element['name']);
-                  documentReference.get().then((documentSnapshot) {
-                    if (documentSnapshot.exists) {
-                      print('');
-                      documentReference.update({
-                        'quantity': FieldValue.increment(element['quantity'])
-                      }).then((value) {
-                        print('Document updated successfully.');
-                      }).catchError((error) {
-                        print('Failed to update document: $error');
-                      });
-                    } else {
-                      FirebaseFirestore.instance
-                          .collection('report')
-                          .doc(element['name'])
-                          .set({
-                        'date': DateTime.now().toString().substring(0, 10),
-                        'name': element['name'],
-                        'quantity': element['quantity']
-                      });
-                    }
-                    print('Item added successfully');
-                  }).catchError((error) {
-                    print('Failed to get document: $error');
-                  });
-                }
-              },
-              child: const Text('Save Order'),
-            ),
           ],
         ),
       ),

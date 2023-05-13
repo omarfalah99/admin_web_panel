@@ -1,17 +1,18 @@
-import 'package:admin_web_panel/description_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+import 'order_details.dart';
+
+class ConfirmedOrders extends StatefulWidget {
+  const ConfirmedOrders({Key? key}) : super(key: key);
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<ConfirmedOrders> createState() => _ConfirmedOrdersState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
-  String name = "";
+class _ConfirmedOrdersState extends State<ConfirmedOrders> {
+  String name = '';
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -46,7 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
               flex: 7,
               child: StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
-                    .collection('products')
+                    .collection('confirmedOrders')
                     .snapshots(),
                 builder: (context, AsyncSnapshot snapshots) {
                   return (snapshots.connectionState == ConnectionState.waiting)
@@ -59,9 +60,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           ? ListView.builder(
                               itemCount: snapshots.data!.docs.length,
                               itemBuilder: (context, index) {
-                                var data = snapshots.data!.docs[index].data()
+                                var e = snapshots.data!.docs[index].data()
                                     as Map<String, dynamic>;
-                                if (data['name']
+                                if (e['nameOfUser']
                                     .toString()
                                     .toLowerCase()
                                     .contains(name.toLowerCase())) {
@@ -76,22 +77,22 @@ class _HomeScreenState extends State<HomeScreen> {
                                     onPressed: () {
                                       Navigator.of(context).push(
                                           MaterialPageRoute(builder: (context) {
-                                        return desScreen(
-                                          image: data['imageUrl'],
-                                          tag: 'tag',
-                                          kg: data['kg'],
-                                          des: data['des'],
-                                          name: data['name'],
-                                          price: data['price'],
-                                          barcode: data['barcode'],
-                                          id: data['id'],
-                                          category: data['category'],
+                                        return OrderDetails(
+                                          street: e['street'],
+                                          status: 'Confirm',
+                                          orders: e['items'],
+                                          city: e['city'],
+                                          email: e['email'],
+                                          garak: e['garak'],
+                                          name: e['nameOfUser'],
+                                          phone: e['phone'],
+                                          date: e['date'].toString(),
                                         );
                                       }));
                                     },
                                     child: ListTile(
                                       title: Text(
-                                        data['name'],
+                                        e['nameOfUser'],
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
                                         style: const TextStyle(
@@ -99,25 +100,18 @@ class _HomeScreenState extends State<HomeScreen> {
                                             fontSize: 16,
                                             fontWeight: FontWeight.bold),
                                       ),
-                                      leading: Image.network(data['imageUrl']),
-                                      trailing: Text(data['quantity']),
+                                      subtitle: Text(e['date']
+                                          .toString()
+                                          .substring(0, 10)),
+                                      trailing: Text(e['city']),
                                     ),
                                   );
                                 }
                                 return Container();
                               },
                             )
-                          : GridView.builder(
+                          : ListView.builder(
                               itemCount: snapshots.data?.docs.length,
-                              gridDelegate:
-                                  SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount:
-                                    MediaQuery.of(context).size.width > 1000
-                                        ? 6
-                                        : 4,
-                                mainAxisExtent:
-                                    MediaQuery.of(context).size.width * 0.32,
-                              ),
                               itemBuilder: (context, index) {
                                 if (snapshots.connectionState ==
                                     ConnectionState.waiting) {
@@ -125,7 +119,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     child: CircularProgressIndicator(),
                                   );
                                 } else {
-                                  final products = snapshots.data?.docs[index];
+                                  final e = snapshots.data?.docs[index];
                                   return Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: TextButton(
@@ -144,30 +138,33 @@ class _HomeScreenState extends State<HomeScreen> {
                                         Navigator.of(context).push(
                                             MaterialPageRoute(
                                                 builder: (context) {
-                                          return desScreen(
-                                            image: products['imageUrl'],
-                                            tag: 'wow$index',
-                                            des: products['des'],
-                                            name: products['name'],
-                                            price: products['price'],
-                                            id: products['id'],
-                                            kg: products['kg'],
-                                            category: products['category'],
-                                            barcode: products['barcode'],
+                                          return OrderDetails(
+                                            street: e['street'],
+                                            status: 'Confirm',
+                                            orders: e['items'],
+                                            city: e['city'],
+                                            email: e['email'],
+                                            garak: e['garak'],
+                                            name: e['nameOfUser'],
+                                            phone: e['phone'],
+                                            date: e['date'].toString(),
                                           );
                                         }));
                                       },
-                                      child: Column(
-                                        children: [
-                                          Image.network(
-                                            products!['imageUrl'],
-                                            fit: BoxFit.cover,
-                                          ),
-                                          MediaQuery.of(context).size.width <
-                                                  600
-                                              ? Container()
-                                              : Text(products['name']),
-                                        ],
+                                      child: ListTile(
+                                        title: Text(
+                                          e['nameOfUser'],
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: const TextStyle(
+                                              color: Colors.black54,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        subtitle: Text(e['date']
+                                            .toString()
+                                            .substring(0, 10)),
+                                        trailing: Text(e['city']),
                                       ),
                                     ),
                                   );

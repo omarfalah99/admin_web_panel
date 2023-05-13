@@ -2,31 +2,35 @@ import 'package:admin_web_panel/edit_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-class DescriptionScreen extends StatefulWidget {
+class desScreen extends StatefulWidget {
   String tag;
   String des;
   String id;
   String name;
+  String kg;
   String image;
+  String barcode;
   String price;
   String category;
 
-  DescriptionScreen({
+  desScreen({
     Key? key,
     required this.image,
     required this.tag,
+    required this.kg,
     required this.des,
     required this.name,
     required this.price,
+    required this.barcode,
     required this.id,
     required this.category,
   }) : super(key: key);
 
   @override
-  State<DescriptionScreen> createState() => _DescriptionScreenState();
+  State<desScreen> createState() => _desScreenState();
 }
 
-class _DescriptionScreenState extends State<DescriptionScreen> {
+class _desScreenState extends State<desScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,10 +55,12 @@ class _DescriptionScreenState extends State<DescriptionScreen> {
                   id: widget.id,
                   name: widget.name,
                   quantity: '100',
+                  kg: widget.kg,
                   price: widget.price,
                   des: widget.des,
                   imageUrl: widget.image,
                   category: widget.category,
+                  barcode: widget.barcode,
                 );
               }));
             },

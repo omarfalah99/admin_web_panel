@@ -1,3 +1,4 @@
+import 'package:admin_web_panel/item_daily_summary.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
@@ -15,7 +16,7 @@ class _ReportScreenState extends State<ReportScreen> {
     return Scaffold(
       body: Column(
         children: [
-          Text('Most selled items'),
+          // const Text('Most selled items'),
           Expanded(
             child: StreamBuilder(
               builder: (context, snapshot) {
@@ -31,7 +32,43 @@ class _ReportScreenState extends State<ReportScreen> {
                       document.data() as Map<String, dynamic>;
                   myDataList.add(data);
                 });
-                return Container(
+
+                // int sum = 0;
+                // snapshot.data?.docs.forEach((doc) {
+                //   Map<String, dynamic> data = doc.data();
+                //   data.forEach((key, value) {
+                //     if (value is int) {
+                //       sum += value;
+                //     }
+                //   });
+                // });
+
+                List<DataRow> orderRows = [];
+
+                for (DocumentSnapshot document in snapshot.data!.docs) {
+                  Map<String, dynamic> data =
+                      document.data() as Map<String, dynamic>;
+                  int sum = 0;
+                  data.forEach((key, value) {
+                    if (value is int) {
+                      sum += value;
+                    }
+                  });
+
+                  orderRows.add(DataRow(
+                      cells: [
+                        DataCell(Text(document.id)),
+                        DataCell(Text(sum.toString())),
+                      ],
+                      onSelectChanged: (w) {
+                        Navigator.of(context)
+                            .push(MaterialPageRoute(builder: (builder) {
+                          return ItemSummary(date: data['date']);
+                        }));
+                      }));
+                }
+
+                return SizedBox(
                   // color: Colors.red,
                   width: double.infinity,
                   height: 500,
@@ -41,23 +78,15 @@ class _ReportScreenState extends State<ReportScreen> {
                           borderRadius: BorderRadius.circular(10),
                           style: BorderStyle.solid),
                       columns: const [
-                        DataColumn(label: Text('Item name')),
-                        DataColumn(label: Text('Item Count')),
+                        DataColumn(label: Text('Date')),
+                        DataColumn(label: Text('Total items')),
                       ],
-                      rows: myDataList.map((e) {
-                        return DataRow(
-                          onSelectChanged: (o) {},
-                          cells: [
-                            DataCell(Text(e['name'])),
-                            DataCell(Text(e['quantity'].toString())),
-                          ],
-                        );
-                      }).toList()),
+                      rows: orderRows.toList(),
+                      onSelectAll: (val) {}),
                 );
               },
               stream: FirebaseFirestore.instance
-                  .collection('report')
-                  .orderBy('quantity', descending: true)
+                  .collection('DailyData')
                   .snapshots(),
             ),
           )

@@ -67,13 +67,16 @@ class _OrdersScreenState extends State<OrdersScreen> {
                             Navigator.of(context)
                                 .push(MaterialPageRoute(builder: (context) {
                               return OrderDetails(
-                                  street: e['street'],
-                                  orders: e['items'],
-                                  city: e['city'],
-                                  email: e['email'],
-                                  garak: e['garak'],
-                                  name: e['nameOfUser'],
-                                  phone: e['phone']);
+                                street: e['street'],
+                                orders: e['items'],
+                                status: 'Not Confirm',
+                                city: e['city'],
+                                email: e['email'],
+                                garak: e['garak'],
+                                name: e['nameOfUser'],
+                                phone: e['phone'],
+                                date: e['date'].toString(),
+                              );
                             }));
                           });
                     }).toList()),

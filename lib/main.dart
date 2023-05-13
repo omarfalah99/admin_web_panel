@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:admin_web_panel/add_screen.dart';
+import 'package:admin_web_panel/confirmed_orders.dart';
 import 'package:admin_web_panel/home_screen.dart';
 import 'package:admin_web_panel/orders_screen.dart';
 import 'package:admin_web_panel/provider.dart';
@@ -79,6 +80,11 @@ class MyHomePage extends StatefulWidget {
       title: "Report",
       iconFront: Icons.report,
       child: ReportScreen(),
+    ),
+    SimpleSidebarItem(
+      title: "Confirmed Orders",
+      iconFront: Icons.done,
+      child: ConfirmedOrders(),
     ),
   ];
   final String title;
